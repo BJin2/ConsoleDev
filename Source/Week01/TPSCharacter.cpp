@@ -1,0 +1,205 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "TPSCharacter.h"
+#include "TPSWeapon.h"
+#include "Engine/World.h"
+#include "DrawDebugHelpers.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+
+// Sets default values
+ATPSCharacter::ATPSCharacter()
+{
+ 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
+	SpringArmComp->bUsePawnControlRotation = true;
+	SpringArmComp->SetupAttachment(RootComponent);
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
+	CameraComp->SetupAttachment(SpringArmComp);
+}
+
+// Called when the game starts or when spawned
+void ATPSCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	EndZoom();
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	CurrentWeapon = GetWorld()->SpawnActor<ATPSWeapon>(StarterWeaponClass, spawnParams);
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocketName);
+		CurrentWeapon->SetOwner(this);
+	}
+}
+
+// Called every frame
+void ATPSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	dt = DeltaTime;
+	if (bInCover)
+	{
+		if (bIsAiming)
+		{
+			GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+		}
+		else
+		{
+			if (OverlappingCoverVolume)
+			{
+				GetMesh()->SetWorldRotation(OverlappingCoverVolume->GetComponentRotation().Add(0, 40, 0));
+			}
+		}
+	}
+	else
+	{
+		GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+	}
+}
+
+void ATPSCharacter::MoveForward(float val)
+{
+	if (!bInCover)
+	{
+		GetCharacterMovement()->AddInputVector(GetActorForwardVector() * val);
+	}
+}
+
+void ATPSCharacter::MoveSide(float val)
+{
+	if (bInCover)
+	{
+		FVector targetPos = GetActorLocation() + (OverlappingCoverVolume->GetRightVector() * val * dt);
+		FVector offsetFromCoverCenter = targetPos - (OverlappingCoverVolume->GetComponentLocation());
+		FVector overlappingWorldPos = OverlappingCoverVolume->GetComponentLocation();
+		float offset_coverRight_dot = FVector::DotProduct(offsetFromCoverCenter, OverlappingCoverVolume->GetRightVector());
+		bool isTargetInRange = abs(offset_coverRight_dot) < (OverlappingCoverVolume->GetScaledBoxExtent().Y - 50);
+		bool isMovingTowardCenter = offset_coverRight_dot * val < 0;
+		
+		FVector traceStart = overlappingWorldPos;
+		FVector traceEnd = OverlappingCoverVolume->GetRightVector() * offset_coverRight_dot + overlappingWorldPos;
+		DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Green, false, 1.0f, 0, 1.0f);
+		if (isTargetInRange || isMovingTowardCenter)
+		{
+			GetCharacterMovement()->AddInputVector(OverlappingCoverVolume->GetRightVector() * val);
+		}
+	}
+	else
+	{
+		GetCharacterMovement()->AddInputVector(GetActorRightVector() * val);
+	}
+}
+
+void ATPSCharacter::BeginCrouch()
+{
+	Crouch();
+}
+
+void ATPSCharacter::EndCrouch()
+{
+	UnCrouch();
+}
+
+void ATPSCharacter::StartZoom()
+{
+	bIsAiming = true;
+	CameraComp->SetFieldOfView(zoomFOV);
+}
+
+void ATPSCharacter::EndZoom()
+{
+	bIsAiming = false;
+	CameraComp->SetFieldOfView(defaultFOV);
+}
+
+void ATPSCharacter::FireWeapon()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StartFire();
+	}
+}
+
+void ATPSCharacter::StopWeapon()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->EndFire();
+	}
+}
+
+void ATPSCharacter::ChangeWeaponMode()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->ChangeFireMode();
+	}
+}
+
+void ATPSCharacter::TakeCover()
+{
+	if (OverlappingCoverVolume)
+	{
+		if (bInCover)
+		{
+			bInCover = false;
+		}
+		else
+		{
+			FVector traceStart = GetActorLocation();
+			FVector traceEnd = OverlappingCoverVolume->GetForwardVector() * 10000 + traceStart;
+			FHitResult HitResult;
+
+			FVector TrailEnd = traceEnd;
+
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, traceStart, traceEnd, ECC_Visibility))
+			{
+				FVector targetLocation = HitResult.Location;
+				targetLocation -= OverlappingCoverVolume->GetForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius());
+				SetActorLocation(targetLocation);
+
+				bInCover = true;
+			}
+		}
+	}
+}
+
+// Called to bind functionality to input
+void ATPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	PlayerInputComponent->BindAxis("MoveForward", this, &ATPSCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveSide", this, &ATPSCharacter::MoveSide);
+	PlayerInputComponent->BindAxis("LookUp", this, &ACharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookSide", this, &ACharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ATPSCharacter::BeginCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ATPSCharacter::EndCrouch);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ATPSCharacter::StartZoom);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ATPSCharacter::EndZoom);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATPSCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ATPSCharacter::StopWeapon);
+	PlayerInputComponent->BindAction("FireMode", IE_Pressed, this, &ATPSCharacter::ChangeWeaponMode);
+	PlayerInputComponent->BindAction("TakeCover", IE_Pressed, this, &ATPSCharacter::TakeCover);
+}
+
+FVector ATPSCharacter::GetPawnViewLocation() const
+{
+	if (CameraComp)
+	{
+		return CameraComp->GetComponentLocation();
+	}
+
+	return Super::GetPawnViewLocation();
+}
+
