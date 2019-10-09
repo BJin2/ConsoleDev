@@ -7,8 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "TimerManager.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "TimerManager.h"
 #include "Week01.h"
 
 int32 DebugDrawWeapons = 0;
@@ -43,6 +43,12 @@ float RandomFloat(float min, float max)
 	float range = max - min;
 	return (random * range) + min;
 }
+FVector Normalize(const FVector& a)
+{
+	float lengthA = FMath::Sqrt(FMath::Square(a.X) + FMath::Square(a.Y) + FMath::Square(a.Z));
+	FVector result = a / lengthA;
+	return result;
+}
 void ATPSWeapon::Fire()
 {
 	if (Ammo <= 0)
@@ -55,36 +61,61 @@ void ATPSWeapon::Fire()
 		FVector EyeLoc;
 		FRotator EyeRot;
 		MyOwner->GetActorEyesViewPoint(EyeLoc, EyeRot);
-		float randomX = RandomFloat(-curSpread, curSpread);
-		float randomY = RandomFloat(-curSpread, curSpread);
 		FVector traceEnd = EyeLoc + 10000 * EyeRot.Vector();
 
-		FVector rightVector = FVector::CrossProduct(traceEnd, FVector::UpVector).GetSafeNormal();
-		FVector upVector = FVector::CrossProduct(rightVector, traceEnd).GetSafeNormal();
+		FVector rightVector = Normalize(FVector::CrossProduct(traceEnd, FVector::UpVector));
+		FVector upVector = Normalize(FVector::CrossProduct(rightVector, traceEnd));
+
+		float randomX = RandomFloat(-curSpread, curSpread);
+		float randomY = RandomFloat(-curSpread, curSpread);
 		FVector horizontalOffset = rightVector * randomX;
 		FVector verticalOffset = upVector * randomY;
-		traceEnd += (horizontalOffset + verticalOffset);
 		curSpread *= SpreadIncreasingRate;
+
+		traceEnd += (horizontalOffset + verticalOffset);
 
 		FHitResult HitResult;
 		FVector TrailEnd = traceEnd;
 
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLoc, traceEnd, ECC_Visibility))
+
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(MyOwner);
+		QueryParams.AddIgnoredActor(this);
+		QueryParams.bTraceComplex = false;
+		QueryParams.bReturnPhysicalMaterial = true;
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLoc, traceEnd, ECC_Visibility, QueryParams))
 		{
 			//DO damage stuff
 			AActor* HitActor = HitResult.GetActor();
 			TrailEnd = HitResult.ImpactPoint;
 
+			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Cast<UPhysicalMaterial>(HitResult.PhysMaterial));
+			UParticleSystem* ImpactEffectToPlay = NULL;
 			float DamageToApply = BaseDamege;
 
-
+			switch (SurfaceType)
+			{
+			case Flesh_Default:
+				ImpactEffectToPlay = ImpactEffectBlood;
+				break;
+			case Flesh_Vulnerable:
+				ImpactEffectToPlay = ImpactEffectBlood;
+				DamageToApply *= DamageMultiplier;
+				break;
+			case Concrete:
+				ImpactEffectToPlay = ImpactEffectConcrete;
+				break;
+			default:
+				ImpactEffectToPlay = ImpactEffectConcrete;
+				break;
+			}
 
 
 			UGameplayStatics::ApplyPointDamage(HitActor, DamageToApply, EyeRot.Vector(), HitResult, MyOwner->GetInstigatorController(), this, damageType);
 
-			if (ImpactEffect)
+			if (ImpactEffectToPlay)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffectToPlay, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 			}
 		}
 
