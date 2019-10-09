@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "TPSWeapon.generated.h"
 
+class UCameraShake;
 UCLASS()
 class WEEK01_API ATPSWeapon : public AActor
 {
@@ -55,14 +56,22 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	float SpreadIncreasingRate;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float BaseDamege = 20;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float DamageMultiplier = 4;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	float baseSpread;
-	float curSpread;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UCameraShake> FireCameraShake;
+
+	FTimerHandle BulletTimer;
+	float curSpread;
 	FIRE_MODE curMode;
-	float fireTimer;
-	bool firing;
 
 public:	
 	// Called every frame
@@ -70,10 +79,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Fire();
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
+
 	virtual void StartFire();
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void EndFire();
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void ChangeFireMode();
 };

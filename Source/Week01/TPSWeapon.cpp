@@ -7,6 +7,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "TimerManager.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Week01.h"
 
 int32 DebugDrawWeapons = 0;
 FAutoConsoleVariableRef CVARDrawWeapons = FAutoConsoleVariableRef(TEXT("TPS.DebugDrawWeapons"), DebugDrawWeapons, TEXT("Draw debug weapon line trace"), ECVF_Cheat);
@@ -18,8 +21,7 @@ ATPSWeapon::ATPSWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh Comp"));
 	RootComponent = (USceneComponent*)MeshComp;
-	firing = false;
-	curMode = FIRE_MODE::SINGLE;
+	curMode = FIRE_MODE::AUTO;
 }
 
 // Called when the game starts or when spawned
@@ -33,16 +35,7 @@ void ATPSWeapon::BeginPlay()
 void ATPSWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (firing)
-	{
-		fireTimer += DeltaTime;
-		if (fireTimer >= FireRate)
-		{
-			fireTimer = 0;
-			Fire();
-			curSpread *= SpreadIncreasingRate;
-		}
-	}
+	
 }
 float RandomFloat(float min, float max)
 {
@@ -56,7 +49,7 @@ void ATPSWeapon::Fire()
 		return;
 
 	Ammo--;
-	AActor* MyOwner = GetOwner();
+	APawn* MyOwner = Cast<APawn>(GetOwner());
 	if (MyOwner)
 	{
 		FVector EyeLoc;
@@ -71,6 +64,7 @@ void ATPSWeapon::Fire()
 		FVector horizontalOffset = rightVector * randomX;
 		FVector verticalOffset = upVector * randomY;
 		traceEnd += (horizontalOffset + verticalOffset);
+		curSpread *= SpreadIncreasingRate;
 
 		FHitResult HitResult;
 		FVector TrailEnd = traceEnd;
@@ -79,9 +73,14 @@ void ATPSWeapon::Fire()
 		{
 			//DO damage stuff
 			AActor* HitActor = HitResult.GetActor();
-			UGameplayStatics::ApplyPointDamage(HitActor, 200.0f, EyeRot.Vector(), HitResult, MyOwner->GetInstigatorController(), this, damageType);
-
 			TrailEnd = HitResult.ImpactPoint;
+
+			float DamageToApply = BaseDamege;
+
+
+
+
+			UGameplayStatics::ApplyPointDamage(HitActor, DamageToApply, EyeRot.Vector(), HitResult, MyOwner->GetInstigatorController(), this, damageType);
 
 			if (ImpactEffect)
 			{
@@ -105,7 +104,12 @@ void ATPSWeapon::Fire()
 				TrailComp->SetVectorParameter(TrailEffectParameter, TrailEnd);
 			}
 		}
-
+		// Camera Shake
+		APlayerController* PlayerController = Cast<APlayerController>(MyOwner->GetController());
+		if (PlayerController)
+		{
+			PlayerController->ClientPlayCameraShake(FireCameraShake);
+		}
 		if (DebugDrawWeapons > 0)
 		{
 			DrawDebugLine(GetWorld(), EyeLoc, traceEnd, FColor::Red, false, 0.5f, 0, 1.0f);
@@ -121,16 +125,15 @@ void ATPSWeapon::StartFire()
 	}
 	else if(curMode == FIRE_MODE::AUTO)
 	{
-		fireTimer = FireRate;
 		curSpread = baseSpread;
-		firing = true;
+		GetWorldTimerManager().SetTimer(BulletTimer, this, &ATPSWeapon::Fire, FireRate, true, 0.0f);
 	}
 }
 
 void ATPSWeapon::EndFire()
 {
-	firing = false;
 	curSpread = baseSpread;
+	GetWorldTimerManager().ClearTimer(BulletTimer);
 }
 
 void ATPSWeapon::ChangeFireMode()

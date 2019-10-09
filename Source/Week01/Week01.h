@@ -4,3 +4,6 @@
 
 #include "CoreMinimal.h"
 
+#define Flesh_Default SurfaceType1
+#define Flesh_Vulnerable SurfaceType2
+#define Concrete SurfaceType3
