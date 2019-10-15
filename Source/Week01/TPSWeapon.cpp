@@ -28,7 +28,7 @@ ATPSWeapon::ATPSWeapon()
 void ATPSWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	curSpread = baseSpread;
 }
 
 // Called every frame
@@ -83,7 +83,7 @@ void ATPSWeapon::Fire()
 		QueryParams.AddIgnoredActor(this);
 		QueryParams.bTraceComplex = false;
 		QueryParams.bReturnPhysicalMaterial = true;
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLoc, traceEnd, ECC_Visibility, QueryParams))
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLoc, traceEnd, WeaponChannel, QueryParams))
 		{
 			//DO damage stuff
 			AActor* HitActor = HitResult.GetActor();

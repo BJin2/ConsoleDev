@@ -8,6 +8,6 @@
 #define Flesh_Vulnerable SurfaceType2
 #define Concrete SurfaceType3
 
-#define WeaponChannel ECC_GameTraceChannel1
+#define WeaponChannel ECC_GameTraceChannel2
 
-#define CoverChannel ECC_GameTraceChannel2
+#define CoverChannel ECC_GameTraceChannel3

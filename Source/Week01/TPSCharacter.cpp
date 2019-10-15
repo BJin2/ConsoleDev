@@ -94,7 +94,7 @@ void ATPSCharacter::MoveForward(float val)
 
 void ATPSCharacter::MoveSide(float val)
 {
-	if (bInCover)
+	if (bInCover && OverlappingCoverVolume)
 	{
 		FVector targetPos = GetActorLocation() + (OverlappingCoverVolume->GetRightVector() * val * dt);
 		FVector offsetFromCoverCenter = targetPos - (OverlappingCoverVolume->GetComponentLocation());
@@ -143,7 +143,18 @@ void ATPSCharacter::FireWeapon()
 {
 	if (CurrentWeapon)
 	{
-		CurrentWeapon->StartFire();
+		if (bInCover)
+		{
+			if (bIsAiming)
+			{
+				CurrentWeapon->StartFire();
+			}
+		}
+		else
+		{
+			CurrentWeapon->StartFire();
+		}
+		
 	}
 }
 
