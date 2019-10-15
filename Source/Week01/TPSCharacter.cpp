@@ -12,6 +12,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "HealthComponent.h"
+#include "Week01.h"
 
 // Sets default values
 ATPSCharacter::ATPSCharacter()
@@ -25,6 +27,9 @@ ATPSCharacter::ATPSCharacter()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	HealthComp->OnHealthChanged.AddDynamic(this, &ATPSCharacter::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +44,18 @@ void ATPSCharacter::BeginPlay()
 	{
 		CurrentWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocketName);
 		CurrentWeapon->SetOwner(this);
+	}
+}
+
+void ATPSCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health, float DeltaHealth, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+	if (Health <= 0)
+	{
+		bDead = true;
+		GetMovementComponent()->StopMovementImmediately();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DetachFromControllerPendingDestroy();
+		SetLifeSpan(5);
 	}
 }
 
@@ -162,7 +179,7 @@ void ATPSCharacter::TakeCover()
 
 			FVector TrailEnd = traceEnd;
 
-			if (GetWorld()->LineTraceSingleByChannel(HitResult, traceStart, traceEnd, ECC_Visibility))
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, traceStart, traceEnd, CoverChannel))
 			{
 				FVector targetLocation = HitResult.Location;
 				targetLocation -= OverlappingCoverVolume->GetForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius());

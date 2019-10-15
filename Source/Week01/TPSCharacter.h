@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class ATPSWeapon;
 class UBoxComponent;
+class UHealthComponent;
 
 UCLASS()
 class WEEK01_API ATPSCharacter : public ACharacter
@@ -58,6 +59,15 @@ protected:
 	void StopWeapon();
 	void ChangeWeaponMode();
 	void TakeCover();
+
+	//Health Params
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* HealthComp;
+
+	UFUNCTION()
+	void OnHealthChanged(UHealthComponent* OwningHealthComp, float Health, float DeltaHealth, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerProperties")
+	bool bDead;
 
 public:	
 	// Called every frame

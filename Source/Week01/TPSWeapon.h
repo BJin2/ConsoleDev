@@ -72,7 +72,10 @@ protected:
 	TSubclassOf<UCameraShake> FireCameraShake;
 
 	FTimerHandle BulletTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	float curSpread;
+
 	FIRE_MODE curMode;
 
 public:	

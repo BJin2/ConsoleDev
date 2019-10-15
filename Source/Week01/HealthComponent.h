@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnHealthChangedSignature, UHealthComponent*, HealthComp, float, Health, float, DeltaHealth, const class UDamageType*, DamageType, class AController*, InstigatedBy, AActor*, DamageCauser);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WEEK01_API UHealthComponent : public UActorComponent
 {
@@ -20,18 +20,21 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
-	float Health;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
-	float MaxHealth;
-
-	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
-	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
+		float Health;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
+		float MaxHealth;
+
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+		void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnHealthChangedSignature OnHealthChanged;
 };
