@@ -20,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
-	UStaticMesh* MeshComp;
+	UStaticMeshComponent* MeshComp;
 
 public:	
 	// Called every frame
