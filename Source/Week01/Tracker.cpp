@@ -18,8 +18,11 @@ ATracker::ATracker()
 	//RootComponent->Mobility = EComponentMobility::Movable;
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	RootComponent = MeshComp;
+	MeshComp->SetSimulatePhysics(true);
 	//MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCanEverAffectNavigation(false);
+	MoveForce = 1000;
+	bUseVelocityChange = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,7 +42,7 @@ FVector ATracker::GetNextPoint()
 		UNavigationPath* path = navSystem->FindPathToActorSynchronously(this, GetActorLocation(), player);
 		if (path->PathPoints.Num() > 1)
 		{
-			DrawDebugSphere(GetWorld(), path->PathPoints[1], 30, 12, FColor::Yellow, false, 20.f, 0, 3.f);
+			DrawDebugSphere(GetWorld(), path->PathPoints[1], 30, 12, FColor::Yellow, false, 3.f, 0, 3.f);
 			return path->PathPoints[1];
 		}
 	}
@@ -52,6 +55,24 @@ void ATracker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float distanceToTarget = (NextPoint - GetActorLocation()).Size();
+
+	if (distanceToTarget < 150)
+	{
+		//If I am close enough, calculate new next point
+		NextPoint = GetNextPoint();
+	}
+	else
+	{
+		// Add force to ge to next point
+		FVector force = NextPoint - GetActorLocation();
+		force.Normalize();
+		force *= MoveForce;
+
+		MeshComp->AddForce(force, NAME_None, bUseVelocityChange);
+
+		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + force, 20.f, FColor::Blue, false, 2*DeltaTime, 0, 3.f);
+	}
 }
 
 // Called to bind functionality to input

@@ -27,7 +27,9 @@ protected:
 	FVector NextPoint;
 	FVector GetNextPoint();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
 	float MoveForce;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
 	bool bUseVelocityChange;
 
 public:	
