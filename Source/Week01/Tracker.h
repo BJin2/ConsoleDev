@@ -19,6 +19,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
+	UStaticMesh* MeshComp;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
