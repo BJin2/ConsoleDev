@@ -27,6 +27,9 @@ protected:
 	FVector NextPoint;
 	FVector GetNextPoint();
 
+	float MoveForce;
+	bool bUseVelocityChange;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
