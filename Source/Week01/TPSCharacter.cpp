@@ -56,6 +56,8 @@ void ATPSCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float H
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		DetachFromControllerPendingDestroy();
 		SetLifeSpan(5);
+		GetMesh()->CreateAndSetMaterialInstanceDynamicFromMaterial(0, deathMaterial);
+		//GetMesh()->set
 	}
 }
 
