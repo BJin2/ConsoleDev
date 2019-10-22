@@ -12,6 +12,7 @@ ATracker::ATracker()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComp->SetupAttachment(RootComponent);
+	MeshComp->SetCanEverAffectNavigation(false);
 }
 
 // Called when the game starts or when spawned
