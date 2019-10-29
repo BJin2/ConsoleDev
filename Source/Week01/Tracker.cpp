@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "HealthComponent.h"
+#include "Engine/Engine.h"
 
 // Sets default values
 ATracker::ATracker()
@@ -57,9 +58,12 @@ FVector ATracker::GetNextPoint()
 
 void ATracker::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health, float DeltaHealth, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Trackerbot Damaged " + FString::SanitizeFloat(Health));
+
 	if (Health <= 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Tracker destroyed"));
+		//UE_LOG(LogTemp, Log, TEXT("Tracker destroyed"));
+		Destroy();
 	}
 }
 
