@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Tracker.generated.h"
 
+class HealthComponent;
 class UNavigationSystemV1;
 UCLASS()
 class WEEK01_API ATracker : public APawn
@@ -31,6 +32,13 @@ protected:
 	float MoveForce;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
 	bool bUseVelocityChange;
+
+	//Health Params
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tracker Properties")
+	UHealthComponent* HealthComp;
+
+	UFUNCTION()
+	void OnHealthChanged(UHealthComponent* OwningHealthComp, float Health, float DeltaHealth, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 public:	
 	// Called every frame

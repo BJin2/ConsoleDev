@@ -68,6 +68,7 @@ protected:
 
 	UFUNCTION()
 	void OnHealthChanged(UHealthComponent* OwningHealthComp, float Health, float DeltaHealth, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerProperties")
 	bool bDead;
 

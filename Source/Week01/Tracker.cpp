@@ -8,6 +8,7 @@
 #include "TPSCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "HealthComponent.h"
 
 // Sets default values
 ATracker::ATracker()
@@ -21,6 +22,10 @@ ATracker::ATracker()
 	MeshComp->SetSimulatePhysics(true);
 	//MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCanEverAffectNavigation(false);
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	HealthComp->OnHealthChanged.AddDynamic(this, &ATracker::OnHealthChanged);
+
 	MoveForce = 1000;
 	bUseVelocityChange = true;
 }
@@ -48,6 +53,14 @@ FVector ATracker::GetNextPoint()
 	}
 
 	return GetActorLocation();
+}
+
+void ATracker::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health, float DeltaHealth, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+	if (Health <= 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Tracker destroyed"));
+	}
 }
 
 // Called every frame
