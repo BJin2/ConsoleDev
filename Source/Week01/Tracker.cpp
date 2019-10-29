@@ -10,6 +10,7 @@
 #include "DrawDebugHelpers.h"
 #include "HealthComponent.h"
 #include "Engine/Engine.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 // Sets default values
 ATracker::ATracker()
@@ -59,6 +60,15 @@ FVector ATracker::GetNextPoint()
 void ATracker::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health, float DeltaHealth, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Trackerbot Damaged " + FString::SanitizeFloat(Health));
+
+	if (!MatInstance)
+	{
+		MatInstance = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+	if (MatInstance)
+	{
+		MatInstance->SetScalarParameterValue("LastTimeHit", UGameplayStatics::GetRealTimeSeconds(this));
+	}
 
 	if (Health <= 0)
 	{
