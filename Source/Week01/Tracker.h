@@ -9,6 +9,7 @@
 class USphereComponent;
 class UHealthComponent;
 class UNavigationSystemV1;
+class USoundCue;
 UCLASS()
 class WEEK01_API ATracker : public APawn
 {
@@ -52,6 +53,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tracker Properties")
 	USphereComponent* SelfDamageTrigger;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
+	USoundCue* ExplosionSound;
 
 	void DamageSelf();
 	FTimerHandle SelfDamageTimer;

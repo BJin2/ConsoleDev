@@ -13,6 +13,7 @@
 #include "Engine/Engine.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "TimerManager.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ATracker::ATracker()
@@ -94,6 +95,8 @@ void ATracker::SelfDestruct()
 		FTransform transform = GetTransform();
 		transform.SetScale3D(FVector(3.0f));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, transform);
+		UGameplayStatics::SpawnSoundAtLocation(this, ExplosionSound, GetActorLocation());
+
 		TArray<AActor*> IgnoredActors;
 		IgnoredActors.Add(this);
 		UGameplayStatics::ApplyRadialDamage(GetWorld(), ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
