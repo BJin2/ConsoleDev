@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Tracker.generated.h"
 
+class USphereComponent;
 class UHealthComponent;
 class UNavigationSystemV1;
 UCLASS()
@@ -49,13 +50,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
 	float ExplosionDamage = 100;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tracker Properties")
+	USphereComponent* SelfDamageTrigger;
+
+	void DamageSelf();
+	FTimerHandle SelfDamageTimer;
+	bool bSelfDamageStarted = false;
+
 	bool bDestroyed = false;
 	void SelfDestruct();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

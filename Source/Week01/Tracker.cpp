@@ -3,6 +3,7 @@
 
 #include "Tracker.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 #include "TPSCharacter.h"
@@ -11,6 +12,7 @@
 #include "HealthComponent.h"
 #include "Engine/Engine.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "TimerManager.h"
 
 // Sets default values
 ATracker::ATracker()
@@ -27,6 +29,13 @@ ATracker::ATracker()
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ATracker::OnHealthChanged);
+
+	SelfDamageTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Self Damage Trigger"));
+	SelfDamageTrigger->SetSphereRadius(200);
+	SelfDamageTrigger->SetupAttachment(RootComponent);
+	SelfDamageTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SelfDamageTrigger->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	SelfDamageTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
 	MoveForce = 1000;
 	bUseVelocityChange = true;
@@ -76,6 +85,7 @@ void ATracker::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health
 	}
 }
 
+
 void ATracker::SelfDestruct()
 {
 	if (!bDestroyed)
@@ -90,6 +100,25 @@ void ATracker::SelfDestruct()
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Blue, false, 1.0f, 0, 1.0f);
 		Destroy();
 	}
+}
+
+void ATracker::NotifyActorBeginOverlap(AActor * OtherActor)
+{
+	if (bSelfDamageStarted)
+		return;
+
+	ATPSCharacter* player = Cast<ATPSCharacter>(OtherActor);
+	if (player)
+	{
+		GetWorldTimerManager().SetTimer(SelfDamageTimer, this, &ATracker::DamageSelf, 0.5f, true, 0);
+		MoveForce = 0;
+		bSelfDamageStarted = true;
+	}
+}
+
+void ATracker::DamageSelf()
+{
+	UGameplayStatics::ApplyDamage(this, 20, GetInstigatorController(), this, nullptr);
 }
 
 // Called every frame
@@ -116,6 +145,8 @@ void ATracker::Tick(float DeltaTime)
 		//DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + force, 20.f, FColor::Blue, false, 2*DeltaTime, 0, 3.f);
 	}
 }
+
+
 
 // Called to bind functionality to input
 void ATracker::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
