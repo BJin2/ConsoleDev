@@ -42,6 +42,16 @@ protected:
 
 	UMaterialInstanceDynamic* MatInstance;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
+	UParticleSystem* ExplosionEffect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
+	float ExplosionRadius = 500;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
+	float ExplosionDamage = 100;
+
+	bool bDestroyed = false;
+	void SelfDestruct();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

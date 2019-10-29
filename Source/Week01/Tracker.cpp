@@ -49,7 +49,7 @@ FVector ATracker::GetNextPoint()
 		UNavigationPath* path = navSystem->FindPathToActorSynchronously(this, GetActorLocation(), player);
 		if (path->PathPoints.Num() > 1)
 		{
-			DrawDebugSphere(GetWorld(), path->PathPoints[1], 30, 12, FColor::Yellow, false, 3.f, 0, 3.f);
+			//DrawDebugSphere(GetWorld(), path->PathPoints[1], 30, 12, FColor::Yellow, false, 3.f, 0, 3.f);
 			return path->PathPoints[1];
 		}
 	}
@@ -72,7 +72,22 @@ void ATracker::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health
 
 	if (Health <= 0)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Tracker destroyed"));
+		SelfDestruct();
+	}
+}
+
+void ATracker::SelfDestruct()
+{
+	if (!bDestroyed)
+	{
+		bDestroyed = true;
+		FTransform transform = GetTransform();
+		transform.SetScale3D(FVector(3.0f));
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, transform);
+		TArray<AActor*> IgnoredActors;
+		IgnoredActors.Add(this);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Blue, false, 1.0f, 0, 1.0f);
 		Destroy();
 	}
 }
@@ -98,7 +113,7 @@ void ATracker::Tick(float DeltaTime)
 
 		MeshComp->AddForce(force, NAME_None, bUseVelocityChange);
 
-		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + force, 20.f, FColor::Blue, false, 2*DeltaTime, 0, 3.f);
+		//DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + force, 20.f, FColor::Blue, false, 2*DeltaTime, 0, 3.f);
 	}
 }
 
