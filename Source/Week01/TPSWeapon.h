@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "TPSWeapon.generated.h"
 
+class USoundCue;
 class UCameraShake;
 UCLASS()
 class WEEK01_API ATPSWeapon : public AActor
@@ -77,6 +78,9 @@ protected:
 	float curSpread;
 
 	FIRE_MODE curMode;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	USoundCue* Gunshot;
 
 public:	
 	// Called every frame

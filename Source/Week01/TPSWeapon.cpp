@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Sound/SoundCue.h"
 #include "TimerManager.h"
 #include "Week01.h"
 
@@ -125,7 +126,10 @@ void ATPSWeapon::Fire()
 		}
 		
 		FVector MuzzlePosition = MeshComp->GetSocketLocation(MuzzleSocket);
-
+		if (Gunshot)
+		{
+			UGameplayStatics::SpawnSoundAtLocation(this, Gunshot, MuzzlePosition);
+		}
 		if (TrailEffect)
 		{
 			UParticleSystemComponent* TrailComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TrailEffect, MuzzlePosition);
