@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tracker Properties")
 	USphereComponent* SelfDamageTrigger;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tracker Properties")
+	UAudioComponent* AudioComp;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
 	USoundCue* ExplosionSound;
 

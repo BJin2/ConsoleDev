@@ -14,6 +14,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "TimerManager.h"
 #include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 ATracker::ATracker()
@@ -37,6 +38,8 @@ ATracker::ATracker()
 	SelfDamageTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SelfDamageTrigger->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	SelfDamageTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 
 	MoveForce = 1000;
 	bUseVelocityChange = true;
@@ -142,7 +145,10 @@ void ATracker::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	float distanceToTarget = (NextPoint - GetActorLocation()).Size();
-
+	FVector vel = GetVelocity();
+	float speed = vel.Size();
+	AudioComp->SetVolumeMultiplier(speed / (MoveForce*0.1f));
+	//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Trackerbot Speed " + FString::SanitizeFloat(speed));
 	if (distanceToTarget < 150)
 	{
 		//If I am close enough, calculate new next point
