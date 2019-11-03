@@ -119,6 +119,18 @@ void ATracker::NotifyActorBeginOverlap(AActor * OtherActor)
 	}
 }
 
+void ATracker::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (Other->GetName() == TEXT("Floor"))
+		return;
+
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Hit");
+	if (HitSound)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(this, HitSound, GetActorLocation());
+	}
+}
+
 void ATracker::DamageSelf()
 {
 	UGameplayStatics::ApplyDamage(this, 20, GetInstigatorController(), this, nullptr);

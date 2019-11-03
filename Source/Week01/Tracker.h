@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
 	USoundCue* ExplosionSound;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tracker Properties")
+	USoundCue* HitSound;
+
 	void DamageSelf();
 	FTimerHandle SelfDamageTimer;
 	bool bSelfDamageStarted = false;
@@ -68,6 +71,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
