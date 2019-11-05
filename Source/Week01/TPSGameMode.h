@@ -14,11 +14,22 @@ class WEEK01_API ATPSGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 protected : 
+	FTimerHandle TimerHandle_BotSpawner;
+	FTimerHandle TimerHandle_WaveStarter;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
+	float timeBetweenWaves;
+	int waveNumber = 0;
+	int numberOfBotsToSpawn;
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode")
 	void SpawnNewBot();
 	void SapwnBotTimerElapsed();
 	void StartWave();
 	void EndWave();
 	void PrepareForNextWave();
+
+public :
+	virtual void StartPlay() override;
 
 };
