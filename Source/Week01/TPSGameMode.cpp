@@ -3,3 +3,18 @@
 
 #include "TPSGameMode.h"
 
+void ATPSGameMode::SapwnBotTimerElapsed()
+{
+}
+
+void ATPSGameMode::StartWave()
+{
+}
+
+void ATPSGameMode::EndWave()
+{
+}
+
+void ATPSGameMode::PrepareForNextWave()
+{
+}

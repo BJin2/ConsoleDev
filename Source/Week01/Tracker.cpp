@@ -60,7 +60,7 @@ FVector ATracker::GetNextPoint()
 	if (player)
 	{
 		UNavigationPath* path = navSystem->FindPathToActorSynchronously(this, GetActorLocation(), player);
-		if (path->PathPoints.Num() > 1)
+		if (path && path->PathPoints.Num() > 1)
 		{
 			//DrawDebugSphere(GetWorld(), path->PathPoints[1], 30, 12, FColor::Yellow, false, 3.f, 0, 3.f);
 			return path->PathPoints[1];

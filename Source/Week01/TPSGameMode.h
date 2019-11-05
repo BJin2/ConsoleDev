@@ -13,5 +13,12 @@ UCLASS()
 class WEEK01_API ATPSGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+protected : 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode")
+	void SpawnNewBot();
+	void SapwnBotTimerElapsed();
+	void StartWave();
+	void EndWave();
+	void PrepareForNextWave();
+
 };
