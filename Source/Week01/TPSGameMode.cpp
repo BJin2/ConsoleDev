@@ -3,11 +3,25 @@
 
 #include "TPSGameMode.h"
 #include "TimerManager.h"
+#include "Engine/World.h"
+#include "HealthComponent.h"
+
+ATPSGameMode::ATPSGameMode()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 1.0f;
+}
 
 void ATPSGameMode::StartPlay()
 {
 	Super::StartPlay();
 	StartWave();
+}
+
+void ATPSGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	CheckWaveState();
 }
 
 void ATPSGameMode::StartWave()
@@ -24,7 +38,7 @@ void ATPSGameMode::SapwnBotTimerElapsed()
 	SpawnNewBot();
 	numberOfBotsToSpawn--;
 	//Once completed, call EndWave()
-	if (numberOfBotsToSpawn == 0)
+	if (numberOfBotsToSpawn <= 0)
 		EndWave();	
 }
 
@@ -32,11 +46,33 @@ void ATPSGameMode::EndWave()
 {
 	//Stop the bot spawn timer
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
-	PrepareForNextWave();
+	//PrepareForNextWave();
 }
 
 void ATPSGameMode::PrepareForNextWave()
 {
 	//set up timer for StartWave()
 	GetWorldTimerManager().SetTimer(TimerHandle_WaveStarter, this, &ATPSGameMode::StartWave, timeBetweenWaves, false);
+}
+
+void ATPSGameMode::CheckWaveState()
+{
+	bool bIsPreparingForNextWave = GetWorldTimerManager().IsTimerActive(TimerHandle_WaveStarter);
+	if (numberOfBotsToSpawn > 0 || bIsPreparingForNextWave)
+		return;
+	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+	{
+		APawn* pawn = It->Get();
+		if (pawn == nullptr || pawn->IsPlayerControlled())
+		{
+			continue;
+		}
+
+		UHealthComponent* HealthComponent = Cast<UHealthComponent>(pawn->GetComponentByClass(UHealthComponent::StaticClass()));
+		if (HealthComponent && HealthComponent->GetHealth() > 0)
+		{
+			return;
+		}
+	}
+	PrepareForNextWave();
 }

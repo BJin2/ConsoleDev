@@ -15,6 +15,11 @@ UHealthComponent::UHealthComponent()
 }
 
 
+float UHealthComponent::GetHealth() const
+{
+	return Health;
+}
+
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {

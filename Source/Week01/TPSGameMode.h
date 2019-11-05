@@ -28,8 +28,10 @@ protected :
 	void StartWave();
 	void EndWave();
 	void PrepareForNextWave();
+	void CheckWaveState();
 
 public :
+	ATPSGameMode();
 	virtual void StartPlay() override;
-
+	virtual void Tick(float DeltaTime) override;
 };
