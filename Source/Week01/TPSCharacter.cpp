@@ -5,10 +5,8 @@
 #include "TPSWeapon.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
-#include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -21,13 +19,6 @@ ATPSCharacter::ATPSCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
-	SpringArmComp->bUsePawnControlRotation = true;
-	SpringArmComp->SetupAttachment(RootComponent);
-
-	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
-	CameraComp->SetupAttachment(SpringArmComp);
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ATPSCharacter::OnHealthChanged);
@@ -134,13 +125,13 @@ void ATPSCharacter::EndCrouch()
 void ATPSCharacter::StartZoom()
 {
 	bIsAiming = true;
-	CameraComp->SetFieldOfView(zoomFOV);
+	//CameraComp->SetFieldOfView(zoomFOV);
 }
 
 void ATPSCharacter::EndZoom()
 {
 	bIsAiming = false;
-	CameraComp->SetFieldOfView(defaultFOV);
+	//CameraComp->SetFieldOfView(defaultFOV);
 }
 
 void ATPSCharacter::FireWeapon()
@@ -210,28 +201,10 @@ void ATPSCharacter::TakeCover()
 void ATPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAxis("MoveForward", this, &ATPSCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveSide", this, &ATPSCharacter::MoveSide);
-	PlayerInputComponent->BindAxis("LookUp", this, &ACharacter::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookSide", this, &ACharacter::AddControllerYawInput);
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ATPSCharacter::BeginCrouch);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ATPSCharacter::EndCrouch);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ATPSCharacter::StartZoom);
-	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ATPSCharacter::EndZoom);
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATPSCharacter::FireWeapon);
-	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ATPSCharacter::StopWeapon);
-	PlayerInputComponent->BindAction("FireMode", IE_Pressed, this, &ATPSCharacter::ChangeWeaponMode);
-	PlayerInputComponent->BindAction("TakeCover", IE_Pressed, this, &ATPSCharacter::TakeCover);
 }
 
 FVector ATPSCharacter::GetPawnViewLocation() const
 {
-	if (CameraComp)
-	{
-		return CameraComp->GetComponentLocation();
-	}
-
 	return Super::GetPawnViewLocation();
 }
 
