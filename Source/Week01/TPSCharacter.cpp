@@ -6,13 +6,13 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "HealthComponent.h"
 #include "Week01.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ATPSCharacter::ATPSCharacter()
@@ -189,6 +189,7 @@ void ATPSCharacter::TakeCover()
 			{
 				FVector targetLocation = HitResult.Location;
 				targetLocation -= OverlappingCoverVolume->GetForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius());
+				DrawDebugSphere(GetWorld(), targetLocation, 10, 24, FColor::Yellow, false, 5, 0, 2);
 				SetActorLocation(targetLocation);
 
 				bInCover = true;
