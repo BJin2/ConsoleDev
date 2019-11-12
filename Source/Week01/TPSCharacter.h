@@ -45,11 +45,16 @@ protected:
 	bool bInCover;
 	float dt;
 
+	UFUNCTION(BlueprintCallable)
 	virtual void StartZoom();
+	UFUNCTION(BlueprintCallable)
 	virtual void EndZoom();
+	UFUNCTION(BlueprintCallable)
 	void FireWeapon();
+	UFUNCTION(BlueprintCallable)
 	void StopWeapon();
 	void ChangeWeaponMode();
+	UFUNCTION(BlueprintCallable)
 	void TakeCover();
 
 	//Health Params
