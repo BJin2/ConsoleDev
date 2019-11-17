@@ -42,6 +42,10 @@ void ATPSGameMode::IncreaseScore(int amt)
 void ATPSGameMode::IncreaseKillCount()
 {
 	killCount++;
+	scoreMultiplier *= 2;
+	if (scoreMultiplier > 8) scoreMultiplier = 8;
+
+	GetWorldTimerManager().SetTimer(TimerHandle_Combo, this, &ATPSGameMode::FinishCombo, 2.0f, false);
 }
 
 void ATPSGameMode::SapwnBotTimerElapsed()
@@ -87,4 +91,9 @@ void ATPSGameMode::CheckWaveState()
 		}
 	}
 	PrepareForNextWave();
+}
+
+void ATPSGameMode::FinishCombo()
+{
+	scoreMultiplier = 1;
 }

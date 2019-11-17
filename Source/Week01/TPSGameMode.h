@@ -39,6 +39,7 @@ protected :
 	void EndWave();
 	void PrepareForNextWave();
 	void CheckWaveState();
+	void FinishCombo();
 
 public :
 	ATPSGameMode();
