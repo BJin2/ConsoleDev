@@ -41,7 +41,7 @@ void ATPSCharacter::BeginPlay()
 
 void ATPSCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health, float DeltaHealth, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
-	if (Health <= 0)
+	if (Health <= 0 && !bDead)
 	{
 		bDead = true;
 		StopWeapon();
@@ -51,6 +51,7 @@ void ATPSCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float H
 		SetLifeSpan(5);
 		GetMesh()->CreateAndSetMaterialInstanceDynamicFromMaterial(0, deathMaterial);
 		GetMesh()->SetScalarParameterValueOnMaterials("StartTime", UGameplayStatics::GetRealTimeSeconds(this));
+		Death(headshot);
 	}
 }
 
@@ -120,6 +121,10 @@ void ATPSCharacter::BeginCrouch()
 void ATPSCharacter::EndCrouch()
 {
 	UnCrouch();
+}
+
+void ATPSCharacter::Death(bool head)
+{
 }
 
 void ATPSCharacter::StartZoom()
@@ -207,5 +212,10 @@ void ATPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 FVector ATPSCharacter::GetPawnViewLocation() const
 {
 	return Super::GetPawnViewLocation();
+}
+
+void ATPSCharacter::SetHeadshot(bool h)
+{
+	headshot = h;
 }
 

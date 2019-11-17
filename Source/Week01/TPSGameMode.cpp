@@ -5,6 +5,7 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "HealthComponent.h"
+#include "Engine/Engine.h"
 
 ATPSGameMode::ATPSGameMode()
 {
@@ -30,6 +31,17 @@ void ATPSGameMode::StartWave()
 	numberOfBotsToSpawn = 2 * waveNumber;
 	//set up timer  to SapwnBotTimerElapsed()
 	GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ATPSGameMode::SapwnBotTimerElapsed, 1.0f, true, 0.0f);
+}
+
+void ATPSGameMode::IncreaseScore(int amt)
+{
+	score += (amt*scoreMultiplier);
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Score : " + FString::SanitizeFloat((double)score));
+}
+
+void ATPSGameMode::IncreaseKillCount()
+{
+	killCount++;
 }
 
 void ATPSGameMode::SapwnBotTimerElapsed()

@@ -14,4 +14,6 @@ class WEEK01_API ATPSAI : public ATPSCharacter
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void Death(bool head) override;
 };

@@ -16,11 +16,20 @@ class WEEK01_API ATPSGameMode : public AGameModeBase
 protected : 
 	FTimerHandle TimerHandle_BotSpawner;
 	FTimerHandle TimerHandle_WaveStarter;
+	FTimerHandle TimerHandle_Combo;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game Mode")
 	float timeBetweenWaves;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Scoring")
 	int waveNumber = 0;
 	int numberOfBotsToSpawn;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Scoring")
+	int score = 0;
+	int scoreMultiplier = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Scoring")
+	int killCount = 0;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode")
 	void SpawnNewBot();
@@ -34,4 +43,6 @@ public :
 	ATPSGameMode();
 	virtual void StartPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	void IncreaseScore(int amt);
+	void IncreaseKillCount();
 };

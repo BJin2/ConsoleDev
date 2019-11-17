@@ -2,6 +2,7 @@
 
 
 #include "TPSWeapon.h"
+#include "TPSCharacter.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -111,7 +112,9 @@ void ATPSWeapon::Fire()
 				break;
 			}
 
-
+			ATPSCharacter* hitCharacter = Cast<ATPSCharacter>(HitActor);
+			if (hitCharacter)
+				hitCharacter->SetHeadshot(DamageToApply != BaseDamege);
 			UGameplayStatics::ApplyPointDamage(HitActor, DamageToApply, EyeRot.Vector(), HitResult, MyOwner->GetInstigatorController(), this, damageType);
 
 			if (ImpactEffectToPlay)

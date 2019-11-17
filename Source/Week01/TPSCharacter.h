@@ -45,6 +45,9 @@ protected:
 	bool bInCover;
 	float dt;
 
+	bool headshot = false;
+	virtual void Death(bool head);
+
 	UFUNCTION(BlueprintCallable)
 	virtual void StartZoom();
 	UFUNCTION(BlueprintCallable)
@@ -76,4 +79,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual FVector GetPawnViewLocation() const override;
+	void SetHeadshot(bool h);
 };
