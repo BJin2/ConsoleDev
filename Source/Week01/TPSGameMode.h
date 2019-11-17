@@ -26,6 +26,7 @@ protected :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Scoring")
 	int score = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Scoring")
 	int scoreMultiplier = 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Scoring")
