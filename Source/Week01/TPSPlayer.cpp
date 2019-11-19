@@ -2,9 +2,12 @@
 
 
 #include "TPSPlayer.h"
+#include "TPSGameMode.h"
+#include "Engine/Engine.h"
 #include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATPSPlayer::ATPSPlayer()
 {
@@ -16,6 +19,15 @@ ATPSPlayer::ATPSPlayer()
 	CameraComp->SetupAttachment(SpringArmComp);
 }
 
+
+void ATPSPlayer::Death(bool head)
+{
+	ATPSGameMode* mode = Cast<ATPSGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (!mode)
+		return;
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Death");
+	mode->GameOver();
+}
 
 void ATPSPlayer::StartZoom()
 {

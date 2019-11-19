@@ -26,6 +26,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PlayerProperties", meta = (ClampMin = 30, ClampMax = 120))
 	float zoomFOV;
 
+	virtual void Death(bool head) override;
+
 	virtual void StartZoom()override;
 	virtual void EndZoom()override;
 

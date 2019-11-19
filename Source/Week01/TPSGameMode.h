@@ -41,10 +41,14 @@ protected :
 	void CheckWaveState();
 	void FinishCombo();
 
+
+	
 public :
 	ATPSGameMode();
 	virtual void StartPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void IncreaseScore(int amt);
 	void IncreaseKillCount();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode")
+	void GameOver();
 };

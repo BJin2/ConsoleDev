@@ -36,7 +36,7 @@ void ATPSGameMode::StartWave()
 void ATPSGameMode::IncreaseScore(int amt)
 {
 	score += (amt*scoreMultiplier);
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Score : " + FString::SanitizeFloat((double)score));
+	
 }
 
 void ATPSGameMode::IncreaseKillCount()
@@ -44,7 +44,7 @@ void ATPSGameMode::IncreaseKillCount()
 	killCount++;
 	scoreMultiplier *= 2;
 	if (scoreMultiplier > 8) scoreMultiplier = 8;
-
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Kill : " + FString::SanitizeFloat((double)killCount));
 	GetWorldTimerManager().SetTimer(TimerHandle_Combo, this, &ATPSGameMode::FinishCombo, 2.0f, false);
 }
 
