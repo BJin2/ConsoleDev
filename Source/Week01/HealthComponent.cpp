@@ -26,7 +26,7 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 	// ...
 	Health = MaxHealth;
-	//UE_LOG(LogTemp, Log, TEXT("Max Health %s "), *FString::SanitizeFloat(MaxHealth));
+	UE_LOG(LogTemp, Log, TEXT("Max Health %s "), *FString::SanitizeFloat(MaxHealth));
 	AActor* MyOwner = GetOwner();
 
 	if (MyOwner)

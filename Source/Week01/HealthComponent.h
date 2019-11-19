@@ -30,7 +30,7 @@ protected:
 		float Health;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
-		float MaxHealth;
+		float MaxHealth = 500;
 
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 		void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
