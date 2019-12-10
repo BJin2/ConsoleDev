@@ -16,4 +16,5 @@ class WEEK01_API ATPSAI : public ATPSCharacter
 	
 protected:
 	virtual void Death(bool head) override;
+	virtual void StartRestore() override;
 };

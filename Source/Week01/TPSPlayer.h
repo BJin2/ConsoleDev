@@ -25,12 +25,18 @@ protected:
 	float defaultFOV;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PlayerProperties", meta = (ClampMin = 30, ClampMax = 120))
 	float zoomFOV;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PlayerProperties")
+	float restoreRate;
 
+	FTimerHandle TimerHandle_HealthRestore;
+
+	virtual void StartRestore() override;
 	virtual void Death(bool head) override;
 
 	virtual void StartZoom()override;
 	virtual void EndZoom()override;
-
+	UFUNCTION(BlueprintCallable)
+	void RestoreHealth();
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

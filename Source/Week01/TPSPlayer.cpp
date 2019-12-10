@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "HealthComponent.h"
+#include "TimerManager.h"
 
 ATPSPlayer::ATPSPlayer()
 {
@@ -20,6 +22,24 @@ ATPSPlayer::ATPSPlayer()
 }
 
 
+void ATPSPlayer::StartRestore()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Setting Restore Timer");
+	GetWorldTimerManager().ClearTimer(TimerHandle_HealthRestore);
+	GetWorldTimerManager().SetTimer(TimerHandle_HealthRestore, this, &ATPSPlayer::RestoreHealth, 0.1f, true, 2.0f);
+}
+void ATPSPlayer::RestoreHealth()
+{
+	float tempHealth = HealthComp->GetHealth();
+	float max = HealthComp->GetMaxHealth();
+	float increment = restoreRate * 5.0f;
+	if (tempHealth + increment > max)
+	{
+		float sub = max - (tempHealth + increment);
+		increment += sub;
+	}
+	HealthComp->IncreaseHealth(increment);
+}
 void ATPSPlayer::Death(bool head)
 {
 	ATPSGameMode* mode = Cast<ATPSGameMode>(UGameplayStatics::GetGameMode(GetWorld()));

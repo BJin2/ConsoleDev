@@ -47,7 +47,7 @@ protected:
 
 	bool headshot = false;
 	virtual void Death(bool head);
-
+	virtual void StartRestore();
 	UFUNCTION(BlueprintCallable)
 	virtual void StartZoom();
 	UFUNCTION(BlueprintCallable)

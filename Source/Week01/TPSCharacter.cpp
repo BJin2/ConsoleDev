@@ -3,6 +3,7 @@
 
 #include "TPSCharacter.h"
 #include "TPSWeapon.h"
+#include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -52,6 +53,11 @@ void ATPSCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float H
 		GetMesh()->CreateAndSetMaterialInstanceDynamicFromMaterial(0, deathMaterial);
 		GetMesh()->SetScalarParameterValueOnMaterials("StartTime", UGameplayStatics::GetRealTimeSeconds(this));
 		Death(headshot);
+	}
+	else
+	{
+		if(DeltaHealth != 0)
+			StartRestore();
 	}
 }
 
@@ -124,6 +130,10 @@ void ATPSCharacter::EndCrouch()
 }
 
 void ATPSCharacter::Death(bool head)
+{
+}
+
+void ATPSCharacter::StartRestore()
 {
 }
 

@@ -20,6 +20,16 @@ float UHealthComponent::GetHealth() const
 	return Health;
 }
 
+float UHealthComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+void UHealthComponent::IncreaseHealth(float amount)
+{
+	Health += amount;
+}
+
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {

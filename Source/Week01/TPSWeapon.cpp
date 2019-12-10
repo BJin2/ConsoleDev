@@ -23,7 +23,7 @@ ATPSWeapon::ATPSWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh Comp"));
 	RootComponent = (USceneComponent*)MeshComp;
-	curMode = FIRE_MODE::SINGLE;
+	curMode = FIRE_MODE::AUTO;
 }
 
 // Called when the game starts or when spawned

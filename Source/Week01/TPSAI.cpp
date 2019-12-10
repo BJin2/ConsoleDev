@@ -20,3 +20,7 @@ void ATPSAI::Death(bool head)
 	mode->IncreaseScore(score);
 	mode->IncreaseKillCount();
 }
+
+void ATPSAI::StartRestore()
+{
+}
