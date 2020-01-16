@@ -45,6 +45,7 @@ void ATPSCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float H
 	if (Health <= 0 && !bDead)
 	{
 		bDead = true;
+		OnDeath.Broadcast(this);
 		StopWeapon();
 		GetMovementComponent()->StopMovementImmediately();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

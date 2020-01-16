@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "TPSCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature, ATPSCharacter*, actor);
 
 class ATPSWeapon;
 class UBoxComponent;
@@ -73,6 +74,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PlayerProperties")
 	UMaterialInterface* deathMaterial;
 public:	
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnDeathSignature OnDeath;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
